@@ -149,15 +149,22 @@ class quadTree3D {
 
 }
 
-let maxParticles = 15;
+let maxParticles = 10;
+let theta = 0.9;
+
+let setTheta = (thetat)=>{
+    theta = thetat;
+};
+let setParticlesMax = (max)=>{
+    maxParticles = max;
+}
 
 /**
  * @param {quadTree3D} tree 
  * @param {Charge} target 
- * @param {number} theta 
  * @returns 
  */
-function getNetForce(tree, target, theta) {
+function getNetForce(tree, target) {
     //console.log(tree)
     if (!tree.hasChildren && tree.charges.length > 0) {
         return {e:eFieldBetweenCharges(target, tree.charges),m:mFieldBetweenCharges(target,tree.charges)};
@@ -242,4 +249,4 @@ function resetCounterAll() {
 //console.log(starting.points.filter(p => p.x >= starting.midpoint.x && p.pos.y >= mp))
 //console.log(starting, iterations, N * Math.log(N), N * N, counter+counter1)
 
-export { quadTree3D, pointsToDraw, getNetForce, Point3D, recursion, counter1, iterations, resetCounterAll, dis }
+export { setParticlesMax, setTheta, quadTree3D, pointsToDraw, getNetForce, Point3D, recursion, counter1, iterations, resetCounterAll, dis }

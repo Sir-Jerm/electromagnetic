@@ -9,6 +9,7 @@ import { borisAlg, eulerMethod, leapFrog } from "./js/physics/integration.js";
 import { computationsCounter, magneticFieldAt } from "./js/physics/magneticField.js";
 import { quadTree3D, getNetForce, Point3D, recursion, resetCounterAll, iterations, counter1, dis } from "./js/misc/octree.js";
 import { Graph } from "./js/misc/graph.js";
+import {} from "./js/misc/buttons.js";
 
 // function f(x, y) {
 //     return Math.sin(x) * Math.cos(y);
@@ -66,7 +67,7 @@ function simulate(func) {
 
 let global = {};
 
-let N = 300;
+let N = 3000;
 
 function random(scale = 1) {
     return Math.random() < 0.5 ? Math.random() * scale : -Math.random() * scale;
@@ -173,9 +174,9 @@ new Graph(()=>{
 }, [100,100])
 
 new Graph(()=>{
-    return Charge.all[0].pos.magn*4;
+    return t;
 }, ()=>{
-    return Charge.all[0].v.magn*4;
+    return counter2.com;
 }, [150,100])
 
 //setInterval(()=>{console.log(iterations/1000, counter/1000, counter3/1000);resetCounterAll()}, 10000)

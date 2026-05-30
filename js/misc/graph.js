@@ -3,11 +3,11 @@
 let max = 5;
 let factor = 10;
 
-function drawLine(xy1, xy2, ctx) {
+function drawLine(xy1, xy2, ctx, color="rgb(255,0,0)") {
     ctx.beginPath();
     ctx.moveTo(xy1[0], xy1[1]);
     ctx.lineTo(xy2[0], xy2[1]);
-    ctx.strokeStyle = "rgb(255, 0, 0)";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.closePath();
@@ -72,17 +72,27 @@ class Graph {
         this.ctx.fillRect(0, 0, this.html.width, this.html.height);
 
         this.graphPoints(this.xParam(), this.yParam());
+        //let maxY = 0;
 
         for (let i = 0; i < this.points.length; i++) {
 
-            let adder = 10;
+            let adder = 20;
             let pointsPix = this.realPointToScreen(this.points[i]);
-            if (pointsPix[0] < 0 || pointsPix[0] > this.html.width || pointsPix[1] < 0 || pointsPix[1] > this.html.height) continue;
+            if (pointsPix[0] < 0 || pointsPix[0] > this.html.width) continue;
+            if (pointsPix[1] - adder < 0 || pointsPix[1] + adder> this.html.height) {
+                //if(pointsPix[i]>maxY) maxY = pointsPix;
+                this.max[1]+=1;
+                //pointsPix = this.realPointToScreen(this.points[i]);
+            }
+            // while(pointsPix[0] < 0 || pointsPix[0] > this.html.width) {
+            //     this.moveCamera[0]+=0.1;
+            //     pointsPix = this.realPointToScreen(this.points[i]);
+            // }
 
-            // if (pointsPix[0] + adder > this.html.width) this.moveCamera[0] -= 0.01;
-            // if (pointsPix[1] + adder > this.html.height) this.moveCamera[1] -= 0.01;
-            // if (pointsPix[1] - adder < 0) this.moveCamera[1] += 0.01;
-            // if (pointsPix[0] - adder < 0) this.moveCamera[0] += 0.01;
+            if (pointsPix[0] + adder > this.html.width) this.moveCamera[0] -= 0.01;
+            if (pointsPix[1] + adder > this.html.height) this.moveCamera[1] -= 0.01;
+            //if (pointsPix[1] - adder < 0) this.moveCamera[1] += 0.01;
+            //if (pointsPix[0] - adder < 0) this.moveCamera[0] += 0.01;
 
             if (this.points[i + 1]) {
                 this.drawLineHTML(
@@ -90,16 +100,16 @@ class Graph {
                     this.points[i + 1][0], this.points[i + 1][1]
                 );
                 this.drawLineHTML(
-                    this.points[this.points.length - 1]?.[0], this.points[this.points.length - 1]?.[1] - 10,
-                    this.points[this.points.length - 1]?.[0], this.points[this.points.length - 1]?.[1] + 10
+                    this.points[this.points.length - 1]?.[0], this.points[this.points.length - 1]?.[1] - 1,
+                    this.points[this.points.length - 1]?.[0], this.points[this.points.length - 1]?.[1] + 1, "rgb(105, 124, 187)"
                 )
-                let factor = 100;
-                for (let i = 0; i < this.points.length / factor; i += 1) {
-                    this.drawLineHTML(
-                        this.points[i * factor]?.[0], this.points[i * factor]?.[1] - 10,
-                        this.points[i * factor]?.[0], this.points[i * factor]?.[1] + 10
-                    )
-                }
+                // let factor = 100;
+                // for (let i = 0; i < this.points.length / factor; i += 1) {
+                //     this.drawLineHTML(
+                //         this.points[i * factor]?.[0], this.points[i * factor]?.[1] - 10,
+                //         this.points[i * factor]?.[0], this.points[i * factor]?.[1] + 10
+                //     )
+                // }
                 //console.log('w')
             }
             //console.log(this.points)
@@ -114,13 +124,13 @@ class Graph {
     /**
      * REAL/DATA POINTS
      */
-    drawLineHTML(x1, y1, x2, y2) {
+    drawLineHTML(x1, y1, x2, y2, color="rgb(255,0,0)") {
         let screen1 = this.realPointToScreen([x1, y1]) //converts data points to screen points for drawing
         let screen2 = this.realPointToScreen([x2, y2])
         //console.log(screen1, screen2)
-
+        color = `hsl(${this.moveCamera[0]},100%,50%)`;
         //if (!this.ctx) return;
-        drawLine([screen1[0], screen1[1]], [screen2[0], screen2[1]], this.ctx)
+        drawLine([screen1[0], screen1[1]], [screen2[0], screen2[1]], this.ctx, color)
     }
 }
 
@@ -164,16 +174,16 @@ addEventListener('keypress', (e) => {
     if (movement) {
         switch (e.key) {
             case "s":
-                graph.moveCamera[1] += 1;
+                graph.max[1] += 1;
                 break;
             case "w":
-                graph.moveCamera[1] -= 1;
+                //graph.max[1] -= 1;
                 break;
             case "a":
-                graph.moveCamera[0] += 1;
+                graph.max[0] += 1;
                 break;
             case "d":
-                graph.moveCamera[0] -= 1;
+                //graph.max[0] -= 1;
                 break;
         }
     }
