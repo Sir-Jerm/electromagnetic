@@ -79,11 +79,12 @@ class Graph {
             let adder = 20;
             let pointsPix = this.realPointToScreen(this.points[i]);
             if (pointsPix[0] < 0 || pointsPix[0] > this.html.width) continue;
-            if (pointsPix[1] - adder < 0 || pointsPix[1] + adder> this.html.height) {
+            if (pointsPix[1] + adder> this.html.height) {
                 //if(pointsPix[i]>maxY) maxY = pointsPix;
                 this.max[1]+=1;
                 //pointsPix = this.realPointToScreen(this.points[i]);
             }
+            if(pointsPix[1] - adder < 0) this.moveCamera[1] += 0.01;
             // while(pointsPix[0] < 0 || pointsPix[0] > this.html.width) {
             //     this.moveCamera[0]+=0.1;
             //     pointsPix = this.realPointToScreen(this.points[i]);

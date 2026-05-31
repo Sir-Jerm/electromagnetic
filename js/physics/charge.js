@@ -58,6 +58,13 @@ class Charge {
             color || (this.q < 0 ? "hsl(0, 100%, 50%)" : "hsl(206, 100%, 50%)")
         );
     }
+    static deleteAll() {
+        let length = Charge.all.length;
+        for (let i = 0; i < length; i++) {
+            Charge.all.pop();
+        }
+        console.log(Charge.all)
+    }
 }
 
 
@@ -83,4 +90,35 @@ canvas.addEventListener('mousemove', (e) => {
     }
 })
 
-export { Charge, dt }
+let N = 3000;
+
+function random(scale = 1) {
+    return Math.random() < 0.5 ? Math.random() * scale : -Math.random() * scale;
+}
+
+//copied
+function gaussianRandom(mean = 0, stdDev = 1) {
+    let u1 = Math.random();
+    let u2 = Math.random();
+    let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+    return z0 * stdDev + mean;
+}
+
+for (let i = 0; i < N; i++) {
+    //storage[i] = new Vector3(random(dis / 2),random(dis / 2),random(dis / 2))
+    let poss = new Vector3(gaussianRandom(0, 5), random(0.5), random(0.5))
+    new Charge(poss, 1, poss.x, new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
+}
+
+function setParticles(num) {
+    N = num;
+    Charge.deleteAll();
+    for (let i = 0; i < N; i++) {
+        //storage[i] = new Vector3(random(dis / 2),random(dis / 2),random(dis / 2))
+        let poss = new Vector3(gaussianRandom(0, 5), random(0.5), random(0.5))
+        new Charge(poss, 1, poss.x, new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
+    }
+    console.log(Charge.all)
+}
+
+export { Charge, dt, setParticles}
