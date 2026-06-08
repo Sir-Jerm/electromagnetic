@@ -114,7 +114,7 @@ function eFieldBetweenCharges(target, charges) {
 
 /**
  * 
- * @param {Charge} charge 
+ * 
  * @param {Vector3} centerOfMass 
  * @param {number} totalCharge 
  */

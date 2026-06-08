@@ -1,5 +1,6 @@
-import { setParticles } from "../physics/charge.js";
+import { setParticles, resetPreset, setPreset } from "../physics/charge.js";
 import { setTheta, setParticlesMax } from "./octree.js";
+import {animate, notPause, setFieldsVar} from "../../main.js";
 
 document.querySelector("#enterTHETA").addEventListener('click',()=>{
     let input = Number(document.querySelector("#THETA").value);
@@ -22,5 +23,61 @@ document.querySelector("#RESET").addEventListener('click', ()=>{
     setTheta(0.7); setParticlesMax(15);
     document.querySelector("#PMAX").value = 15;
     document.querySelector("#THETA").value = 0.7;
+    resetPreset();
+})
+document.querySelector("#magnetEnter").addEventListener('click',()=>{
+    let value = {mean: 0, stdDev: 5, applicationToAxis:"x", otherAxis:0.5}
+    value.mean = Number(document.querySelector("#magnetMean").value);
+    value.stdDev = Number(document.querySelector("#magnetStdDev").value);
+    value.applicationToAxis = document.querySelector("#magnetAxis").value.trim().toLowerCase();
+    if(value.applicationToAxis != "x" && value.applicationToAxis != "y" && value.applicationToAxis != "z") {
+        alert("Axis to apply magnet must be x or y or z. Defaulting to x...");
+        value.applicationToAxis = "x";
+    }
+    value.otherAxis = Number(document.querySelector("#magnetOthers").value);
+    setPreset("magnet", value);
+})
+document.querySelector("#cubeEnter").addEventListener('click', ()=>{
+    let value = Number(document.querySelector("#cube").value);
+    setPreset("cube", value);
+})
+document.querySelector("#PAUSE").addEventListener('click',()=>{
+    notPause();
+})
+function easyQuery(id) {return document.querySelector(id).value.toLowerCase().trim();}
 
+document.querySelector("#vectorsEnter").addEventListener('click',()=>{
+    let otime = easyQuery("#vectorsO");
+    if(otime == "nlogn") otime=true;
+    else if(otime == "nn") otime=false;
+    else {alert("Big O Time Input is not \"nlogn\" or \"nn\". Defaulting to nlogn... "); otime=true;};
+
+    let magnetic = easyQuery("#vectorsM");
+    if(magnetic == "true") magnetic = true;
+    else if (magnetic == "false") magnetic = false;
+    else {alert("Magnetic Time is not true or false. Deaulting to true..."); magnetic = true;}
+    
+    let electric = easyQuery("#vectorsE");
+    if(electric == "true") electric = true;
+    else if (electric == "false") electric = false;
+    else {alert("Electric Fields input is not true or false. Defaulting to true..."); electric = true;}
+    
+    let on = easyQuery("#vectorsOn");
+    if(on == "true") on = true;
+    else if (on == "false") on = false;
+    else {alert("Vector On/Off input is not true or false. Defaulting to false..."); on = false;}
+
+    let range = Number(document.querySelector("#vectorsR").value);
+    if(range && range >= 0) range = range;
+    else {alert("Range input is not a positive number. Defaulting to 2..."); range = 2;}
+    
+    let distant = Number(document.querySelector("#vectorsD").value);
+    if(distant && distant > 0) distant = distant;
+    else {alert("Distance between Vectors input is not a positive number. Defaulting to 0.4..."); distant = 0.4;}
+    
+    let speed = Number(document.querySelector("#vectorsS").value);
+    if(speed && speed > 0) speed = speed;
+    else {alert("Speed per Frame input is not a positive number. Defaulting to 0.01..."); speed = 0.01;}
+    
+    setFieldsVar(on, otime, magnetic, electric, range, distant, speed)
 })

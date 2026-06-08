@@ -1,4 +1,4 @@
-import { Charge, dt } from "./charge.js";
+import { Charge, dt, PRESETS } from "./charge.js";
 import { Vector3 } from "./vector3.js";
 import { electricFieldAt } from "./electricField.js";
 import { magneticFieldAt } from "./magneticField.js";
@@ -116,8 +116,8 @@ function borisAlg(charge) {
     let pos = charge.pos
     let v = charge.v
     //let a = charge.a
-    let Efield = charge.Efield//electricFieldAt(new Vector3(pos.x, pos.y, pos.z), false, charge);
-    let MField = charge.Mfield//magneticFieldAt(new Vector3(pos.x, pos.y, pos.z), true);
+    let Efield = charge.Efield;//electricFieldAt(new Vector3(pos.x, pos.y, pos.z), false, charge);
+    let MField = charge.Mfield;//magneticFieldAt(new Vector3(pos.x, pos.y, pos.z), true);
     let scaler = charge.q / charge.m; // changes Electric field (qF=E) to force (F=ma) to acceleration
 
     //we get half step velocity

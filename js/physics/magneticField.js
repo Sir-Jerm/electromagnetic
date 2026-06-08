@@ -12,6 +12,7 @@ function magneticFieldAt(point, graph) {
     let B = new Vector3(0, 0, 0);
 
     for (let i = 0; i < Charge.all.length; i++) {
+        computationsCounter++;
 
         let charge = Charge.all[i];
 
@@ -32,7 +33,7 @@ function magneticFieldAt(point, graph) {
     }
 
     //console.log('----')
-    //drawVector(B, point, "rgb(34, 255, 0)");
+    drawVector(B, point, "rgb(25, 127, 0)");
 
     return B;
 }
@@ -69,7 +70,7 @@ function mFieldBetweenCharges(target, charges) {
 
         B = Vector3.add(B, dB);
     }
-    //drawVector(B, target.pos, "rgb(34, 255, 0)");
+    //drawVector(B, target.pos, "rgb(0, 0, 0)");
     return B;
 }
 

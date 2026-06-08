@@ -1,6 +1,6 @@
 import { eFieldBetweenCharges, electricFieldAt, fakeChargeEF, counter, resetCounter0 } from "../physics/electricField.js";
 import { Vector3 } from "../physics/vector3.js";
-import { Charge } from "../physics/charge.js";
+import { Charge, PRESETS } from "../physics/charge.js";
 import { fakeChargeMField, mFieldBetweenCharges, resetCounterM } from "../physics/magneticField.js";
 
 //copied
@@ -37,11 +37,11 @@ function randomCharge() {
 }
 let counter1 = 0;
 function centerOfMass(tree) {
-    if(tree.charges?.length===1) return tree.charges[0].pos;
+    if (tree.charges?.length === 1) return tree.charges[0].pos;
     let m = 0;
     let pos = new Vector3(0, 0, 0);
     let q = 0;
-    let v = new Vector3(0,0,0);
+    let v = new Vector3(0, 0, 0);
     for (let c of tree.charges) {
         counter1++;
         pos = Vector3.add(pos, c.pos.scale(c.m));
@@ -50,7 +50,7 @@ function centerOfMass(tree) {
         m += c.m;
     }
     tree.totalCharge = q;
-    tree.totalV = v.scale(1/m)
+    tree.totalV = v.scale(1 / m)
     return pos.scale(1 / m);
 }
 
@@ -68,7 +68,9 @@ class quadTree3D {
         this.children = children;
         this.midpoint = midpoint;
         this.charges = charges;
-        this.centerOfMass=centerOfMass(this);
+        this.totalV = new Vector3(0, 0, 0);
+        this.totalCharge = 0;
+        this.centerOfMass = centerOfMass(this);
         //this.netForce = new Vector3(0, 0, 0);
         this.width = width;
 
@@ -97,7 +99,7 @@ class quadTree3D {
         this.children[name] = child;
         //this.netForce = Vector3.add(this.netForce,child.netForce);
         //this.totalCharge+=child.totalCharge; 
-        this.centerOfMass = Vector3.add(this.centerOfMass,child.centerOfMass);
+        this.centerOfMass = Vector3.add(this.centerOfMass, child.centerOfMass);
         this.charges = [];
     }
     get hasChildren() {
@@ -123,43 +125,89 @@ class quadTree3D {
         let neB = [], seB = [], nwB = [], swB = [], neF = [], seF = [], nwF = [], swF = [];
 
         for (let p of tree.charges) {
-            iterations++;
-            if (p.pos.x >= mp.x && p.pos.y >= mp.y && p.pos.z < mp.z) neB.push(p); //if there are charges within subnodes boundaries put them in the node array
-            else if (p.pos.x >= mp.x && p.pos.y < mp.y && p.pos.z < mp.z) seB.push(p);
-            else if (p.pos.x < mp.x && p.pos.y >= mp.y && p.pos.z < mp.z) nwB.push(p);
-            else if (p.pos.x < mp.x && p.pos.y < mp.y && p.pos.z < mp.z) swB.push(p);
-            else if (p.pos.x >= mp.x && p.pos.y >= mp.y && p.pos.z >= mp.z) neF.push(p);
-            else if (p.pos.x >= mp.x && p.pos.y < mp.y && p.pos.z >= mp.z) seF.push(p);
-            else if (p.pos.x < mp.x && p.pos.y >= mp.y && p.pos.z >= mp.z) nwF.push(p);
-            else if (p.pos.x < mp.x && p.pos.y < mp.y && p.pos.z >= mp.z) swF.push(p);
+            let x = p.pos.x >= mp.x;
+            let y = p.pos.y >= mp.y;
+            let z = p.pos.z < mp.z;
+            if (x && y && z) neB.push(p); //if there are charges within subnodes boundaries put them in the node array
+            else if (x && !y && z) seB.push(p);
+            else if (!x && y && z) nwB.push(p);
+            else if (!x && !y && z) swB.push(p);
+            else if (x && y && !z) neF.push(p);
+            else if (x && !y && !z) seF.push(p);
+            else if (!x && y && !z) nwF.push(p);
+            else if (!x && !y && !z) swF.push(p);
         }
 
-        if (neB.length > 0) tree.addChild(new quadTree3D({}, neBMidPoint, neB, divider), 'neB'); //if there are no charges do not add them
-        if (seB.length > 0) tree.addChild(new quadTree3D({}, seBMidPoint, seB, divider), 'seB');
-        if (nwB.length > 0) tree.addChild(new quadTree3D({}, nwBMidPoint, nwB, divider), 'nwB');
-        if (swB.length > 0) tree.addChild(new quadTree3D({}, swBMidPoint, swB, divider), 'swB');
-
-        if (neF.length > 0) tree.addChild(new quadTree3D({}, neFMidPoint, neF, divider), 'neF');
-        if (seF.length > 0) tree.addChild(new quadTree3D({}, seFMidPoint, seF, divider), 'seF');
-        if (nwF.length > 0) tree.addChild(new quadTree3D({}, nwFMidPoint, nwF, divider), 'nwF');
-        if (swF.length > 0) tree.addChild(new quadTree3D({}, swFMidPoint, swF, divider), 'swF');
+        if (neB.length > 0) { tree.addChild(new quadTree3D({}, neBMidPoint, neB, divider), 'neB'); iterations++; } //if there are no charges do not add them
+        if (seB.length > 0) { tree.addChild(new quadTree3D({}, seBMidPoint, seB, divider), 'seB'); iterations++; }
+        if (nwB.length > 0) { tree.addChild(new quadTree3D({}, nwBMidPoint, nwB, divider), 'nwB'); iterations++; }
+        if (swB.length > 0) { tree.addChild(new quadTree3D({}, swBMidPoint, swB, divider), 'swB'); iterations++; }
+        if (neF.length > 0) { tree.addChild(new quadTree3D({}, neFMidPoint, neF, divider), 'neF'); iterations++; }
+        if (seF.length > 0) { tree.addChild(new quadTree3D({}, seFMidPoint, seF, divider), 'seF'); iterations++; }
+        if (nwF.length > 0) { tree.addChild(new quadTree3D({}, nwFMidPoint, nwF, divider), 'nwF'); iterations++; }
+        if (swF.length > 0) { tree.addChild(new quadTree3D({}, swFMidPoint, swF, divider), 'swF'); iterations++; }
 
         return tree.children;
     }
-
 }
 
-let maxParticles = 10;
-let theta = 0.9;
+let maxParticles = 15;
+let theta = 0.7;
 
-let setTheta = (thetat)=>{
+let setTheta = (thetat) => {
     theta = thetat;
 };
-let setParticlesMax = (max)=>{
+let setParticlesMax = (max) => {
     maxParticles = max;
 }
 
 /**
+ * @param {number} size - size of tree. tree.width should suffice for most applications
+ * @param {Function} arg1 - if size / dis < theta
+ * @param {Function} arg2 - if size / dis >= theta
+ */
+function barnesHut(size, arg1, arg2) {
+    if (size / dis < theta) {
+        return arg1();
+    }
+    else {
+        return arg2();
+    }
+}
+
+/**
+ * this uses the barnes hut algorithm but accounts for the presets
+ *  
+ * ex: if using the electrostatic there is no point in calculating the magnetic force
+ * 
+ * returns - {e:Vector3, m:Vector3}
+ */
+function barnesHutWithConditionals(size, tree, target){
+    return barnesHut(size, () => {
+        if (PRESETS.Magnetostatic.applied) return { e: new Vector3(0, 0, 0), m: fakeChargeMField(target, tree.centerOfMass, tree.totalV, tree.totalCharge) }
+        if (PRESETS.Electrostatic.applied) return { e: fakeChargeEF(target, tree.centerOfMass, tree.totalCharge), m: new Vector3(0, 0, 0) };
+        if (PRESETS.ConstantElectric.applied) return { e: PRESETS.ConstantElectric.value, m: fakeChargeMField(target, tree.centerOfMass, tree.totalV, tree.totalCharge) };
+        if (PRESETS.ConstantMagnetic.applied) return { e: fakeChargeEF(target, tree.centerOfMass, tree.totalCharge), m: PRESETS.ConstantMagnetic.value };
+        return {
+            e: fakeChargeEF(target, tree.centerOfMass, tree.totalCharge),
+            m: fakeChargeMField(target, tree.centerOfMass, tree.totalV, tree.totalCharge)
+        };
+    }, () => {
+        let Efield = new Vector3(0, 0, 0)
+        let Mfield = new Vector3(0, 0, 0)
+        let keys = Object.keys(tree.children);
+
+        for (let ij = 0; ij < keys.length; ij++) {
+            let force = getNetForce(tree.children[keys[ij]], target, theta);
+            Mfield = Vector3.add(Mfield, force.m);
+            Efield = Vector3.add(Efield, force.e);
+        }
+        return { e: Efield, m: Mfield };
+    })
+}
+
+/**
+ * BARNES-HUT ALGORITHM
  * @param {quadTree3D} tree 
  * @param {Charge} target 
  * @returns 
@@ -167,47 +215,19 @@ let setParticlesMax = (max)=>{
 function getNetForce(tree, target) {
     //console.log(tree)
     if (!tree.hasChildren && tree.charges.length > 0) {
-        return {e:eFieldBetweenCharges(target, tree.charges),m:mFieldBetweenCharges(target,tree.charges)};
+        if (PRESETS.Magnetostatic.applied) return { e: new Vector3(0, 0, 0), m: mFieldBetweenCharges(target, tree.charges) };
+        if (PRESETS.Electrostatic.applied) return { e: eFieldBetweenCharges(target, tree.charges), m: new Vector3(0, 0, 0) };
+        if (PRESETS.ConstantElectric.applied) return { e: PRESETS.ConstantElectric.value, m: mFieldBetweenCharges(target, tree.charges) };
+        if (PRESETS.ConstantMagnetic.applied) return { e: eFieldBetweenCharges(target, tree.charges), m: PRESETS.ConstantMagnetic.value };
+        return { e: eFieldBetweenCharges(target, tree.charges), m: mFieldBetweenCharges(target, tree.charges) };
     }
 
     let dis = Vector3.subtract(target.pos, tree.centerOfMass).magn;
-    if (dis<=1e-3) return {e:new Vector3(0,0,0),m:new Vector3(0,0,0)};
-    let size = tree.width;
+    if (dis <= 1e-3) return { e: new Vector3(0, 0, 0), m: new Vector3(0, 0, 0) };
+    //let size = tree.width;
     //counter1++;
 
-    if (size / dis < theta) {
-        return {
-            e:fakeChargeEF(target, tree.centerOfMass, tree.totalCharge),
-            m:fakeChargeMField(target,tree.centerOfMass,tree.totalV,tree.totalCharge)
-        };
-    }
-    else {
-        let Efield = new Vector3(0, 0, 0)
-        let Mfield = new Vector3(0,0,0)
-        let keys = Object.keys(tree.children);
-
-        for (let ij = 0; ij < keys.length; ij++) {
-            let force = getNetForce(tree.children[keys[ij]], target, theta);
-            Mfield = Vector3.add(Mfield,force.m);
-            Efield = Vector3.add(Efield,force.e);
-        }
-        return {e:Efield, m:Mfield};
-    }
-
-
-    // if(Object.keys(this.children).length>0){
-    //     let base = new Vector3(0,0,0);
-    //     for(let c of this.children){
-    //         Vector3.add(base,c.getNetForce());
-    //     }
-    //     return base;
-    // } else if (this.charges) {
-    //     return eFieldBetweenCharges(this.charges);
-    // } 
-    // else {
-    //     console.log(this.midpoint,this.charges,this.children);
-    //     console.log("This lil guy shouldn't exist.");
-    // }
+    return barnesHutWithConditionals(tree.width, tree, target);
 }
 
 //let tree = doBlock(points, [0, 0], 1);
@@ -219,8 +239,8 @@ let dis = 5;
 /**
  * @param {quadTree3D} tree 
  */
-function recursion(tree, startingTree=false) {
-    if(startingTree) pointsToDraw = []; //clears this variable to prevent a memory leak. DO NOT REMOVE VERY IMPORTANT
+function recursion(tree, startingTree = false) {
+    if (startingTree) pointsToDraw = []; //clears this variable to prevent a memory leak. DO NOT REMOVE VERY IMPORTANT
     if (tree.charges.length <= maxParticles || tree.width <= dis / (2 ** 5)) {
         return;
     }
@@ -246,7 +266,29 @@ function resetCounterAll() {
     iterate(0);
 }
 
+/**
+ * @param {Vector3} point
+ * @param {quadTree3D} tree
+ */
+function determineFields(point, tree) {
+    if (tree.hasChildren) {
+        let output = { e: new Vector3(0, 0, 0), m: new Vector3(0, 0, 0) };
+        for (let c in tree.children) {
+            if (tree.children[c] == null) continue;
+            let temp = determineFields(point, tree.children[c]);
+            output.e = Vector3.add(output.e, temp.e);
+            output.m = Vector3.add(output.m, temp.m);
+        }
+        return output;
+    }
+    else {
+        //console.log(tree.totalV)
+        //if(tree.totalV.magn==NaN) console.log("wag");
+        return barnesHutWithConditionals(tree.width, tree, {pos:point});
+    }
+}
+
 //console.log(starting.points.filter(p => p.x >= starting.midpoint.x && p.pos.y >= mp))
 //console.log(starting, iterations, N * Math.log(N), N * N, counter+counter1)
 
-export { setParticlesMax, setTheta, quadTree3D, pointsToDraw, getNetForce, Point3D, recursion, counter1, iterations, resetCounterAll, dis }
+export { determineFields, setParticlesMax, setTheta, quadTree3D, pointsToDraw, getNetForce, Point3D, recursion, counter1, iterations, resetCounterAll, dis }

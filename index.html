@@ -31,8 +31,43 @@
             <input style="width:50vw;" id="PAMOUNT" type="text" value="Total Amount of Particles">
             <button id="enterPAMOUNT">Enter Particles Amount</button>
         </div>
+        
+        <div>
+            <label>Mean of distribution of particles along an axis</label>
+            <input id="magnetMean" type="number" value="0">
+            <label>Standard deviation of particles from mean</label>
+            <input id="magnetStdDev" type="number" value="5">
+            <label>Axis (x, y, z) to apply magnet:</label>
+            <input id="magnetAxis" type="text" value="x">
+            <label>Random range for other Axes:</label>
+            <input id="magnetOthers" type="number" value="0.5">
+            <button id="magnetEnter">Enter Magnet Preset</button>
+        </div>
+        <div>
+            <label>Side length of cube: </label>
+            <input id="cube" type="number" value="10">
+            <button id="cubeEnter">Enter Length</button>
+        </div>
+        <div>
+            <lablel>On: </lablel>
+            <input id="vectorsOn" type="text" value="false">
+            <label>See Electric Fields</label>
+            <input id="vectorsE" type="text" value="true">
+            <label>See Magnetic Fields</label>
+            <input id="vectorsM" type="text" value="true">
+            <label>Range of Vectors:</label>
+            <input id="vectorsR" type="number" value="2">
+            <label>Distant between Vectors:</label>
+            <input id="vectorsD" type="number" value="0.4">
+            <label>Speed per Frame:</label>
+            <input id="vectorsS" type="number" value="0.01">
+            <label>Big O Time Type (nn or nlogn):</label>
+            <input id="vectorsO" type="text" value="nlogn">
+            <button id="vectorsEnter">Enter Vector Info</button>
+        </div>
         <div>
             <button id="RESET">Reset</button>
+            <button id="PAUSE">Pause</button>
         </div>
     </div>
     <canvas id="simulation"></canvas>
