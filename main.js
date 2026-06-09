@@ -155,7 +155,7 @@ function setFieldsVar(on,oTime, magnetic, electric, range, distant, speed){
 
 let changeDis;
 let starting;
-let counter2 = { ite: 0, com: 0, v: 0 };
+let counter2 = { ite: 0, comM:0, comE: 0, v: 0 };
 let performaceCheck = { check1: 0, check2: 0 };
 let pause = false;
 let notPause = ()=>{pause = !pause; if(!pause) animate();};
@@ -184,7 +184,7 @@ function animate() {
         Charge.all[i].Efield = force.e;
     }
     performaceCheck.check2 = performance.now();
-    counter2 = { com: counter + counter1 + computationsCounter, ite: iterations, v: counter2.v };
+    counter2 = { comM:computationsCounter, comE: counter, ite: iterations, v: counter2.v };
     resetCounterAll();
     //performaceCheck.check1=performance.now();
     global = simulate(borisAlg);
@@ -201,13 +201,13 @@ new Graph(() => {
     t += 0.1
     return t
 }, () => {
-    return performaceCheck.check2 - performaceCheck.check1;
+    return 1000/(performaceCheck.check2 - performaceCheck.check1);
 }, [100, 100])
 
 new Graph(() => {
     return t;
 }, () => {
-    return counter2.com;
+    return counter2.comE;
 }, [150, 100])
 
 //setInterval(()=>{console.log(iterations/1000, counter/1000, counter3/1000);resetCounterAll()}, 10000)
@@ -216,7 +216,7 @@ new Graph(() => {
 let interval = setInterval(
     () => {
         console.log(`KE: ${global.KE}. Momenta: ${global.P}.`);
-        console.log(`Octree Iterations: ${counter2.ite}. Computations: ${counter2.com}`);
+        console.log(`Octree Iterations: ${counter2.ite}. Electric Computations: ${counter2.comE}. Magnetic Computations: ${counter2.comM}`);
         console.log(`Megabytes being used: ${performance.memory.usedJSHeapSize / 1e+6}`);
         console.log(`Total Megabytes allocated: ${performance.memory.totalJSHeapSize / 1e+6}`);
         console.log(`Maximum Megabytes available: ${performance.memory.jsHeapSizeLimit / 1e+6}`);

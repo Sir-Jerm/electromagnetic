@@ -1,11 +1,12 @@
 import { setParticles, resetPreset, setPreset } from "../physics/charge.js";
+import { Vector3 } from "../physics/vector3.js";
 import { setTheta, setParticlesMax } from "./octree.js";
 import {animate, notPause, setFieldsVar} from "../../main.js";
 
 document.querySelector("#enterTHETA").addEventListener('click',()=>{
     let input = Number(document.querySelector("#THETA").value);
-    if(input && input >= 0.1 && input <= 1) setTheta(input);
-    else alert(`Theta input--${document.querySelector("#THETA").value}--is either not a number, less than 0.1, or greater than 1.`)
+    if(input && input >= 0.1 && input <= 2) setTheta(input);
+    else alert(`Theta input--${document.querySelector("#THETA").value}--is either not a number, less than 0.1, or greater than 2.`)
 })
 document.querySelector("#enterPMAX").addEventListener('click',()=>{
     let input = Number(document.querySelector("#PMAX").value);
@@ -40,6 +41,35 @@ document.querySelector("#magnetEnter").addEventListener('click',()=>{
 document.querySelector("#cubeEnter").addEventListener('click', ()=>{
     let value = Number(document.querySelector("#cube").value);
     setPreset("cube", value);
+})
+document.querySelector("#electrostaticEnter").addEventListener('click',()=>{
+    setPreset("electrostatic");
+})
+document.querySelector("#magnetostaticEnter").addEventListener('click',()=>{
+    setPreset("magnetostatic");
+})
+document.querySelector("#constantEEnter").addEventListener('click',()=>{
+    const x = Number(document.querySelector("#constantEx").value);
+    const y = Number(document.querySelector("#constantEy").value);
+    const z = Number(document.querySelector("#constantEz").value);
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+        setPreset("constantE", new Vector3(x, y, z));
+    } else {
+        alert("Constant electric field values must be finite numbers.");
+    }
+})
+document.querySelector("#constantMEnter").addEventListener('click',()=>{
+    const x = Number(document.querySelector("#constantMx").value);
+    const y = Number(document.querySelector("#constantMy").value);
+    const z = Number(document.querySelector("#constantMz").value);
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+        setPreset("constantM", new Vector3(x, y, z));
+    } else {
+        alert("Constant magnetic field values must be finite numbers.");
+    }
+})
+document.querySelector("#toroidalEnter").addEventListener('click',()=>{
+    setPreset("toroidal");
 })
 document.querySelector("#PAUSE").addEventListener('click',()=>{
     notPause();

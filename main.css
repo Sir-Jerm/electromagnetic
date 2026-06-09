@@ -4,3 +4,7 @@ body{
 input{
     width: 25vw;
 }
+.border{
+    border-style: solid;
+    border-width: 0.5px;
+}

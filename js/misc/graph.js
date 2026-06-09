@@ -30,6 +30,9 @@ class Graph {
         this.max = [1, 1];
         this.moveCamera = [0, 0]
         this.points = [];
+
+        this.textMax = [0,0];
+
         this.createHTML()
         Graph.all.push(this);
     }
@@ -41,6 +44,12 @@ class Graph {
             (10 * (x + this.moveCamera[0]) + (this.html.width / 2)) / this.max[0],
             (10 * (y + this.moveCamera[1]) + (this.html.height / 2)) / this.max[1]
         ];
+    }
+    drawText(){
+        this.ctx.beginPath();
+        this.ctx.font = "20px serif";
+        this.ctx.fillText(`${this.textMax[1]}`, this.textMax[0], this.textMax[1]);
+        this.ctx.closePath();
     }
     createHTML() {
         this.html = document.createElement('canvas');
@@ -72,6 +81,8 @@ class Graph {
         this.ctx.fillRect(0, 0, this.html.width, this.html.height);
 
         this.graphPoints(this.xParam(), this.yParam());
+
+        //this.drawText();
         //let maxY = 0;
 
         for (let i = 0; i < this.points.length; i++) {

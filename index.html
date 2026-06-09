@@ -19,20 +19,20 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
     <div>
-        <div>
-            <input style="width:50vw;" id="THETA" type="text" value="0.1-1 range value for performance and accuracy">
+        <div class="border">
+            <input style="width:50vw;" id="THETA" type="text" value="0.1-2 range value for performance and accuracy">
             <button id="enterTHETA">Enter Theta</button>
         </div>
-        <div>
+        <div class="border">
             <input style="width:50vw;" id="PMAX" type="text" value="Amount of Particles in each Space Partition">
             <button id="enterPMAX">Enter Particles Amount Per Partition</button>
         </div>
-        <div>
+        <div class="border">
             <input style="width:50vw;" id="PAMOUNT" type="text" value="Total Amount of Particles">
             <button id="enterPAMOUNT">Enter Particles Amount</button>
         </div>
         
-        <div>
+        <div class="border">
             <label>Mean of distribution of particles along an axis</label>
             <input id="magnetMean" type="number" value="0">
             <label>Standard deviation of particles from mean</label>
@@ -43,12 +43,35 @@
             <input id="magnetOthers" type="number" value="0.5">
             <button id="magnetEnter">Enter Magnet Preset</button>
         </div>
-        <div>
+        <div class="border">
             <label>Side length of cube: </label>
             <input id="cube" type="number" value="10">
             <button id="cubeEnter">Enter Length</button>
         </div>
-        <div>
+        <div class="border">
+            <label>Electrostatic:</label>
+            <button id="electrostaticEnter">Apply Electrostatic</button>
+            <label>Magnetostatic:</label>
+            <button id="magnetostaticEnter">Apply Magnetostatic</button>
+        </div>
+        <div class="border">
+            <label>Constant electric field:</label>
+            <input id="constantEx" type="number" value="0" style="width:6vw;">
+            <input id="constantEy" type="number" value="0" style="width:6vw;">
+            <input id="constantEz" type="number" value="0" style="width:6vw;">
+            <button id="constantEEnter">Apply Constant E</button>
+        </div>
+        <div class="border">
+            <label>Constant magnetic field:</label>
+            <input id="constantMx" type="number" value="0" style="width:6vw;">
+            <input id="constantMy" type="number" value="1" style="width:6vw;">
+            <input id="constantMz" type="number" value="0" style="width:6vw;">
+            <button id="constantMEnter">Apply Constant M</button>
+        </div>
+        <div class="border">
+            <button id="toroidalEnter">Apply Toroidal Ring</button>
+        </div>
+        <div class="border">
             <lablel>On: </lablel>
             <input id="vectorsOn" type="text" value="false">
             <label>See Electric Fields</label>
@@ -65,7 +88,7 @@
             <input id="vectorsO" type="text" value="nlogn">
             <button id="vectorsEnter">Enter Vector Info</button>
         </div>
-        <div>
+        <div class="border">
             <button id="RESET">Reset</button>
             <button id="PAUSE">Pause</button>
         </div>

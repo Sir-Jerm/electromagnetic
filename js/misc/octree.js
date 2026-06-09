@@ -152,7 +152,7 @@ class quadTree3D {
 }
 
 let maxParticles = 15;
-let theta = 0.7;
+let theta = 1.5;
 
 let setTheta = (thetat) => {
     theta = thetat;
@@ -166,7 +166,7 @@ let setParticlesMax = (max) => {
  * @param {Function} arg1 - if size / dis < theta
  * @param {Function} arg2 - if size / dis >= theta
  */
-function barnesHut(size, arg1, arg2) {
+function barnesHut(size, dis, arg1, arg2) {
     if (size / dis < theta) {
         return arg1();
     }
@@ -178,12 +178,12 @@ function barnesHut(size, arg1, arg2) {
 /**
  * this uses the barnes hut algorithm but accounts for the presets
  *  
- * ex: if using the electrostatic there is no point in calculating the magnetic force
+ * ex: if using the electrostatic preset there is no point in calculating the magnetic force
  * 
  * returns - {e:Vector3, m:Vector3}
  */
-function barnesHutWithConditionals(size, tree, target){
-    return barnesHut(size, () => {
+function barnesHutWithPresets(size, dis, tree, target){
+    return barnesHut(size, dis, () => {
         if (PRESETS.Magnetostatic.applied) return { e: new Vector3(0, 0, 0), m: fakeChargeMField(target, tree.centerOfMass, tree.totalV, tree.totalCharge) }
         if (PRESETS.Electrostatic.applied) return { e: fakeChargeEF(target, tree.centerOfMass, tree.totalCharge), m: new Vector3(0, 0, 0) };
         if (PRESETS.ConstantElectric.applied) return { e: PRESETS.ConstantElectric.value, m: fakeChargeMField(target, tree.centerOfMass, tree.totalV, tree.totalCharge) };
@@ -227,7 +227,7 @@ function getNetForce(tree, target) {
     //let size = tree.width;
     //counter1++;
 
-    return barnesHutWithConditionals(tree.width, tree, target);
+    return barnesHutWithPresets(tree.width, dis, tree, target);
 }
 
 //let tree = doBlock(points, [0, 0], 1);
@@ -284,7 +284,14 @@ function determineFields(point, tree) {
     else {
         //console.log(tree.totalV)
         //if(tree.totalV.magn==NaN) console.log("wag");
-        return barnesHutWithConditionals(tree.width, tree, {pos:point});
+
+        let dis = Vector3.subtract(point, tree.centerOfMass).magn;
+        if (dis <= 1e-3) return { e: new Vector3(0, 0, 0), m: new Vector3(0, 0, 0) };
+
+        //since the magnetic (fakeChargeMField) and electric (fakeChargeEF)
+        //functions only need the position of the charge
+        //we do not need to give it the actually charge, but simply a position
+        return barnesHutWithPresets(tree.width, dis, tree, {pos:point});
     }
 }
 

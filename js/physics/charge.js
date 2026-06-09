@@ -115,7 +115,7 @@ let PRESETS = {
 
 
 
-let N = 100;
+let N = 1000;
 
 function random(scale = 1) {
     return Math.random() < 0.5 ? Math.random() * scale : -Math.random() * scale;
@@ -134,9 +134,8 @@ function generateMagnet() {
         let poss;
         let charge;
         //storage[i] = new Vector3(random(dis / 2),random(dis / 2),random(dis / 2))
-        if (PRESETS.magnet.value.applicationToAxis == "x")
-        {
-            poss = new Vector3(gaussianRandom(PRESETS.magnet.value.mean, PRESETS.magnet.value.stdDev),random(PRESETS.magnet.value.otherAxis) , random(PRESETS.magnet.value.otherAxis))
+        if (PRESETS.magnet.value.applicationToAxis == "x") {
+            poss = new Vector3(gaussianRandom(PRESETS.magnet.value.mean, PRESETS.magnet.value.stdDev), random(PRESETS.magnet.value.otherAxis), random(PRESETS.magnet.value.otherAxis))
             charge = poss.x;
         }
         else if (PRESETS.magnet.value.applicationToAxis == "y") {
@@ -196,14 +195,14 @@ function resetPreset(magnetApplied = true) {
         "toroidal_charge_ring": {
             applied: false,
             "particles": [
-                { "pos": [0.3, 0.0, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [0.212, 0.212, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [0.0, 0.3, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [-0.212, 0.212, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [-0.3, 0.0, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [-0.212, -0.212, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [0.0, -0.3, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
-                { "pos": [0.212, -0.212, 0.0], "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false }
+                { "pos": new Vector3(0.3, 0.0, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(0.212, 0.212, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(0.0, 0.3, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(-0.212, 0.212, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(-0.3, 0.0, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(-0.212, -0.212, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(0.0, -0.3, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false },
+                { "pos": new Vector3(0.212, -0.212, 0.0), "mass": 1.0, "charge": 0.1, "velocity": [0, 0, 0], "acc": [0, 0, 0], "curve": false }
             ]
         }
     };
@@ -211,13 +210,19 @@ function resetPreset(magnetApplied = true) {
 
 function setPreset(presetType, value) {
     resetPreset(false);
-    if (presetType == "magnet") { PRESETS.magnet.value = value; PRESETS.magnet.applied = true; setParticles(N);}
+    if (presetType == "magnet") { PRESETS.magnet.value = value; PRESETS.magnet.applied = true; setParticles(N); }
     else if (presetType == "electrostatic") PRESETS.Electrostatic.applied = true;
     else if (presetType == "magnetostatic") PRESETS.Magnetostatic.applied = true;
     else if (presetType == "constantE") { PRESETS.ConstantElectric.applied = true; PRESETS.ConstantElectric.value = value }
     else if (presetType == "constantM") { PRESETS.ConstantMagnetic.applied = true; PRESETS.ConstantMagnetic.value = value }
     else if (presetType == "cube") { PRESETS.cube.applied = true; PRESETS.cube.sideLength = value; setParticles(N); }
-    else if (presetType == "toroidal") PRESETS.toroidal_charge_ring.applied = true;
+    else if (presetType == "toroidal") {
+        PRESETS.toroidal_charge_ring.applied = true;
+        setParticles(0);
+        let tcr = PRESETS.toroidal_charge_ring.particles;
+        for (let i = 0; i < 8; i++) {
+            new Charge(tcr[i].pos, 1, 1, new Vector3(0, 0, 0), new Vector3(0, 0, 0), false);
+        }
+    }
 }
-
 export { numberOfParticles, setPreset, Charge, dt, setParticles, PRESETS, setDT, resetPreset }
